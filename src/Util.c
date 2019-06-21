@@ -484,7 +484,7 @@ int handle_select_like_cmd(Likes_t *likes, Command_t *cmd) {
 int handle_join_cmd(Table_t *table,Likes_t *likes,Command_t *cmd,Obey_t *Obey){
     int a;
 	size_t i,j;
-	int sum=0;
+	int sum = 0;
 	User_t *user;
 	Like_t* like;
 	if(!strncmp(cmd->args[9],"id1",3)){
@@ -492,7 +492,34 @@ int handle_join_cmd(Table_t *table,Likes_t *likes,Command_t *cmd,Obey_t *Obey){
 	} else {
 		a=2;
 	}
-	if(a==1){
+	node_t *node = NULL;
+	if (a==1) {
+		for (i=0;i<likes->len;i++){
+			Like_t *like = get_Like(likes,i);
+			node = insert_node(node,like->id1);
+			}
+		for (j=0;j<Obey->len;j++){
+			user = get_User(table,Obey->idxList[j]);
+			node_t *find = search_node(node,user->id);
+			if(find){
+				sum = sum + 1;
+			}
+		}
+	}
+	else {
+		for (i=0;i<likes->len;i++){
+			Like_t *like = get_Like(likes,i);
+			node = insert_node(node,like->id2);
+			}
+		for (j=0;j<Obey->len;j++){
+			user = get_User(table,Obey->idxList[j]);
+			node_t *find = search_node(node,user->id);
+			if(find){
+				sum = sum + 1;
+			}
+		}
+	}
+	/*if(a==1){
 	    for(i=0;i<Obey->len;i++){
 		    user = get_User(table,Obey->idxList[i]);
 		    for(j=0;j<likes->len;j++){
@@ -515,9 +542,48 @@ int handle_join_cmd(Table_t *table,Likes_t *likes,Command_t *cmd,Obey_t *Obey){
 				}
 			}
 		}
-	}
+	}*/
 	printf("(%d)",sum);
-	return 1;
+	return 0;
+}
+
+node_t *create_tree(int k){
+	node_t *node = (node_t*)malloc(sizeof(node_t));
+	if(!node){
+		return NULL;
+	}
+	node->left = NULL;
+	node->right = NULL;
+	node->key = k;
+	return node;
+}
+
+node_t *insert_node(node_t *node,int k){
+	if(!node){
+		node = create_tree(k);
+		node->left = NULL;
+		node->right = NULL;
+	} else {
+		if (k > node->key) {
+			node->right = insert_node(node->right,k);
+		} else if (k < node->key) {
+			node->left = insert_node(node->left,k);
+		}
+	}
+    return node;
+}
+
+node_t *search_node(node_t *node,int k){
+	while(node){
+		if(node->key < k){
+			node = node->right;
+		} else if (node->key > k){
+			node = node->left;
+		} else {
+			return node;
+		}
+	}
+	return NULL;
 }
 
 Obey_t* handle_where(Command_t *cmd,Table_t *table){			//sign指示是从user中做筛选还是从likes中筛选

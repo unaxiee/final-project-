@@ -12,6 +12,12 @@ typedef struct Obey {
     size_t idxList[100000];
 }Obey_t;
 
+typedef struct node {
+    int key;
+    struct node_t *left;
+    struct node_t *right;
+} node_t;
+
 State_t* new_State();
 void print_prompt(State_t *state);
 int print_user(User_t *user, SelectArgs_t *sel_args,double avgid,double avgage,size_t sumid,size_t sumage,size_t count);
@@ -30,4 +36,7 @@ void handle_update_cmd(Table_t *table, Command_t *cmd);
 size_t print_like(Likes_t *likes);
 int add_Like(Likes_t *likes, Like_t *like);
 int handle_join_cmd(Table_t *table,Likes_t *likes,Command_t *cmd,Obey_t *Obey);
+node_t* insert_node(node_t *node,int k);
+node_t* search_node(node_t* node,int k);
+node_t* create_tree(int k);
 #endif
