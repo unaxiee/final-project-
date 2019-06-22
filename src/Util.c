@@ -485,6 +485,7 @@ int handle_join_cmd(Table_t *table,Likes_t *likes,Command_t *cmd,Obey_t *Obey){
     int a;
 	size_t i,j;
 	int sum = 0;
+	int num = 0;
 	User_t *user;
 	Like_t* like;
 	if(!strncmp(cmd->args[9],"id1",3)){
@@ -495,31 +496,27 @@ int handle_join_cmd(Table_t *table,Likes_t *likes,Command_t *cmd,Obey_t *Obey){
 	node_t *node = NULL;
 	if (a==1) {
 		for (i=0;i<likes->len;i++){
-			Like_t *like = get_Like(likes,i);
+			like = get_Like(likes,i);
 			node = insert_node(node,like->id1);
 			}
-		for (j=0;j<Obey->len;j++){
+	    for (j=0;j<Obey->len;j++){
 			user = get_User(table,Obey->idxList[j]);
-			node_t *find = search_node(node,user->id);
-			if(find){
-				sum = sum + 1;
-			}
+			num = search_node(node,user->id);
+			sum = sum + num;
 		}
 	}
-	else {
+	 else {
 		for (i=0;i<likes->len;i++){
-			Like_t *like = get_Like(likes,i);
+			like = get_Like(likes,i);
 			node = insert_node(node,like->id2);
 			}
 		for (j=0;j<Obey->len;j++){
 			user = get_User(table,Obey->idxList[j]);
-			node_t *find = search_node(node,user->id);
-			if(find){
-				sum = sum + 1;
-			}
+			num = search_node(node,user->id);
+			sum = sum + num;
 		}
 	}
-	/*if(a==1){
+	/* if(a==1){
 	    for(i=0;i<Obey->len;i++){
 		    user = get_User(table,Obey->idxList[i]);
 		    for(j=0;j<likes->len;j++){
@@ -534,11 +531,11 @@ int handle_join_cmd(Table_t *table,Likes_t *likes,Command_t *cmd,Obey_t *Obey){
 	else{
 		for(i=0;i<Obey->len;i++){
 			user = get_User(table,Obey->idxList[i]);
+			printf("%d\n",user->id);
 			for(j=0;j<likes->len;j++){
 				like = get_Like(likes,j);
 				if(user->id==like->id2){
 					sum = sum+1;
-					break;
 				}
 			}
 		}
@@ -546,6 +543,68 @@ int handle_join_cmd(Table_t *table,Likes_t *likes,Command_t *cmd,Obey_t *Obey){
 	printf("(%d)",sum);
 	return 0;
 }
+
+/*node_t *insert_node(node_t *root,int k){
+	node_t* current = root;
+	if (root = NULL){
+		root = (node_t*)malloc(sizeof(node));
+		root->key = k;
+		return root;
+	}
+	while(1){
+		if (current->key == k){
+			current = NULL;
+			break;
+		} else if (current->key > k) {
+			if (current->left != NULL){
+				current = current->left;
+			} else {
+				node_t *new = (node*)malloc(sizeof(node_t));
+				new->key = k;
+				new->parent = current;
+				new->left = NULL;
+				new->right = NULL;
+				current->left = new;
+				current = current->left;
+				break;
+			}
+		} else if (current->key < k){
+			if (current->right != NULL) {
+				current = current->right;
+			} else {
+				node_t *new = (node*)malloc(sizeof(node_t));
+				new->key = k;
+				new->parent = current;
+				new->left = NULL;
+				new->right = NULL;
+				current->right = new;
+				current = current->right;
+				break;
+			}
+		}
+	}
+	return current;
+}
+
+node_t *search_node(node_t *root,int k){
+	node* current = root;
+	if (root == NULL){
+		return NULL;
+	}
+	while(1){
+		if (current->key == k){
+			break;
+		} else if (current->key > k){
+			current = current->left;
+		} else {
+			current = current->right;
+		}
+		if (current == NULL){
+			break;
+		}
+	}
+	return current;
+}*/
 
 node_t *create_tree(int k){
 	node_t *node = (node_t*)malloc(sizeof(node_t));
@@ -564,7 +623,7 @@ node_t *insert_node(node_t *node,int k){
 		node->left = NULL;
 		node->right = NULL;
 	} else {
-		if (k > node->key) {
+		if (k >= node->key) {
 			node->right = insert_node(node->right,k);
 		} else if (k < node->key) {
 			node->left = insert_node(node->left,k);
@@ -573,17 +632,37 @@ node_t *insert_node(node_t *node,int k){
     return node;
 }
 
-node_t *search_node(node_t *node,int k){
-	while(node){
-		if(node->key < k){
-			node = node->right;
-		} else if (node->key > k){
-			node = node->left;
-		} else {
-			return node;
+int search_node(node_t *node,int k){
+	int number = 0;
+	node_t *node_left;
+	node_t *node_right;
+    while(node){
+	    if (node->key < k) {
+	 		node = node->right;
+	 	} else if (node->key > k) {
+	 		node = node->left;
+	 	} else {
+			break;
 		}
 	}
-	return NULL;
+	if (node) {
+	 	number++;
+		node_left = node;
+		node_right = node;
+		while(node_left && node_left->key == k) {
+			node_left = node_left->left;
+			if (node_left && node_left->key == k) {
+				number++;
+			}
+		}
+		while(node_right && node_right->key == k) {
+			node_right = node_right->right;
+			if (node_right && node_right->key ==k) {
+				number++;
+			}
+		}
+	}
+	return number;
 }
 
 Obey_t* handle_where(Command_t *cmd,Table_t *table){			//sign指示是从user中做筛选还是从likes中筛选

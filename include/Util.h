@@ -37,6 +37,6 @@ size_t print_like(Likes_t *likes);
 int add_Like(Likes_t *likes, Like_t *like);
 int handle_join_cmd(Table_t *table,Likes_t *likes,Command_t *cmd,Obey_t *Obey);
 node_t* insert_node(node_t *node,int k);
-node_t* search_node(node_t* node,int k);
+int search_node(node_t* node,int k);
 node_t* create_tree(int k);
 #endif

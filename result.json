@@ -1,1 +1,1 @@
-{"join": {"correct": 1, "total": 3, "failed": ["t1.txt", "t2.txt"]}}
+{"join": {"correct": 2, "total": 3, "failed": ["t1.txt"]}}
