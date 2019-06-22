@@ -14,6 +14,7 @@ typedef struct Obey {
 
 typedef struct node {
     int key;
+    int num;
     struct node_t *left;
     struct node_t *right;
 } node_t;

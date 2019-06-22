@@ -540,55 +540,54 @@ int handle_join_cmd(Table_t *table,Likes_t *likes,Command_t *cmd,Obey_t *Obey){
 			}
 		}
 	}*/
-	printf("(%d)",sum);
+	printf("(%d)\n",sum);
 	return 0;
 }
 
-/*node_t *insert_node(node_t *root,int k){
+/* node_t *insert_node(node_t *root,int k){
 	node_t* current = root;
-	if (root = NULL){
-		root = (node_t*)malloc(sizeof(node));
+	if (!root){
+		printf("1");
+		root = (node_t*)malloc(sizeof(node_t));
 		root->key = k;
 		return root;
 	}
 	while(1){
 		if (current->key == k){
-			current = NULL;
+			current->num++;
 			break;
 		} else if (current->key > k) {
 			if (current->left != NULL){
 				current = current->left;
 			} else {
-				node_t *new = (node*)malloc(sizeof(node_t));
+				node_t *new = (node_t*)malloc(sizeof(node_t));
 				new->key = k;
 				new->parent = current;
 				new->left = NULL;
 				new->right = NULL;
 				current->left = new;
-				current = current->left;
 				break;
 			}
 		} else if (current->key < k){
 			if (current->right != NULL) {
 				current = current->right;
 			} else {
-				node_t *new = (node*)malloc(sizeof(node_t));
+				node_t *new = (node_t*)malloc(sizeof(node_t));
 				new->key = k;
 				new->parent = current;
 				new->left = NULL;
 				new->right = NULL;
 				current->right = new;
-				current = current->right;
 				break;
 			}
 		}
 	}
-	return current;
+	return root;
 }
 
 node_t *search_node(node_t *root,int k){
-	node* current = root;
-	if (root == NULL){
+	node_t* current = root;
+	if (!root){
 		return NULL;
 	}
 	while(1){
@@ -620,13 +619,13 @@ node_t *create_tree(int k){
 node_t *insert_node(node_t *node,int k){
 	if(!node){
 		node = create_tree(k);
-		node->left = NULL;
-		node->right = NULL;
 	} else {
-		if (k >= node->key) {
+		if (k > node->key) {
 			node->right = insert_node(node->right,k);
 		} else if (k < node->key) {
 			node->left = insert_node(node->left,k);
+		} else {
+			node->num++;
 		}
 	}
     return node;
@@ -647,20 +646,7 @@ int search_node(node_t *node,int k){
 	}
 	if (node) {
 	 	number++;
-		node_left = node;
-		node_right = node;
-		while(node_left && node_left->key == k) {
-			node_left = node_left->left;
-			if (node_left && node_left->key == k) {
-				number++;
-			}
-		}
-		while(node_right && node_right->key == k) {
-			node_right = node_right->right;
-			if (node_right && node_right->key ==k) {
-				number++;
-			}
-		}
+		number = number + node->num;
 	}
 	return number;
 }
